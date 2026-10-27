@@ -7,34 +7,51 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ClientDAO implements DAO<Client>{
 
     private final static ClientDAO INSTANCE = new ClientDAO();
 
-    private final static String SAVE =  """
+
+    private final static String SAVE_SQL =  """
             INSERT INTO clients(name,phone)
-            VALUES(?,?);
+            VALUES(?,?)
             """;
 
 
-    private final static String DELETE = """
-            DELETE FROM clients WHERE id=?;
+    private final static String DELETE_SQL  = """
+            DELETE FROM clients WHERE id=?
             """;
 
+
+    private final static String UPDATE_SQL  = """
+            UPDATE clients SET name = ?, phone = ? WHERE id = ?
+            """;
+
+
+    private final static String FIND_ALL_SQL  = """
+            SELECT id,name,phone FROM clients
+            """;
+
+
+    private final static String FIND_BY_ID_SQL  = FIND_ALL_SQL + """
+             WHERE id = ?
+            """;
 
 
 
     @Override
     public Client save(Client client){
         try(Connection connection = ConnectionManager.getConnection();
-            PreparedStatement preStatement = connection.prepareStatement(SAVE, PreparedStatement.RETURN_GENERATED_KEYS))
+            PreparedStatement preparedStatement = connection.prepareStatement(SAVE_SQL, PreparedStatement.RETURN_GENERATED_KEYS))
         {
-            preStatement.setString(1,client.getName());
-            preStatement.setString(2,client.getPhone());
-            preStatement.executeUpdate();
-            ResultSet idResSet = preStatement.getGeneratedKeys();
+            preparedStatement.setString(1,client.getName());
+            preparedStatement.setString(2,client.getPhone());
+            preparedStatement.executeUpdate();
+            ResultSet idResSet = preparedStatement.getGeneratedKeys();
             if (idResSet.next()){
                 client.setId(idResSet.getInt(1));
             }
@@ -47,13 +64,14 @@ public class ClientDAO implements DAO<Client>{
 
     }
 
+
     @Override
     public  boolean delete(Integer id){
         try(Connection connection = ConnectionManager.getConnection();
-        PreparedStatement preStatement = connection.prepareStatement(DELETE))
+        PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL))
         {
-            preStatement.setInt(1,id);
-            return preStatement.executeUpdate()>0;
+            preparedStatement.setInt(1,id);
+            return preparedStatement.executeUpdate()>0;
         }
         catch(SQLException e){
             throw new RuntimeException(e);
@@ -62,35 +80,70 @@ public class ClientDAO implements DAO<Client>{
     }
 
 
+    @Override
+    public boolean update(Client client) {
+        try(Connection connection = ConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SQL)){
+            preparedStatement.setString(1,client.getName());
+            preparedStatement.setString(2,client.getPhone());
+            preparedStatement.setInt(3,client.getId());
+            return preparedStatement.executeUpdate()>0;
+        }
 
-
-
-
-
-
-
-
-
-
-
-
+        catch(SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
 
 
 
     @Override
-    public boolean update(Client obj) {
-        return false;
+    public Optional<Client> findById(Integer id) {
+        try(Connection connection = ConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID_SQL))
+        {
+            preparedStatement.setInt(1,id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            Client client = null;
+            if (resultSet.next()){client = buildClient(resultSet);}
+            return Optional.ofNullable(client);
+
+        }
+        catch(SQLException e){
+            throw new RuntimeException(e);
+        }
     }
 
-    @Override
-    public Client findById(Integer id) {
-        return null;
-    }
 
     @Override
     public List<Client> findAll() {
-        return List.of();
+        try(Connection connection = ConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL))
+        {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Client> clients = new ArrayList<>();
+            while(resultSet.next()){
+                clients.add(buildClient(resultSet));
+            }
+            return clients;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
+
+
+
+
+
+    private  Client buildClient(ResultSet resultSet) throws SQLException {
+        return  new Client (resultSet.getInt("id"),
+                resultSet.getString("name"),
+                resultSet.getString("phone"));
+    }
+
 
 
     public static ClientDAO getInstance(){
@@ -99,17 +152,6 @@ public class ClientDAO implements DAO<Client>{
 
 
     private ClientDAO(){}
-
-
-
-
-
-
-
-
-
-
-
 
 }
 
