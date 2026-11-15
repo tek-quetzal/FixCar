@@ -1,6 +1,6 @@
 package by.fixcar.model;
 
-public class Mechanic extends User implements Displayable {
+public class Mechanic extends User{
 
     private String specialization;
 
@@ -14,12 +14,6 @@ public class Mechanic extends User implements Displayable {
 
     public void setSpecialization(String specialization){this.specialization = specialization;}
 
-
-    @Override
-    public void showInfo() {
-
-        System.out.printf("ID механика: %d\nИмя механика: %s\nСпециализация: %s\n",getId(),getName(),specialization);
-    }
 
 
 

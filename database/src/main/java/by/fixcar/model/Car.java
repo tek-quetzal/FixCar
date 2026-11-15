@@ -4,38 +4,43 @@ import by.fixcar.exceptions.ValidationException;
 
 import java.time.Year;
 
-public class Car implements Displayable {
+public class Car {
     private int id;
     private String brand;
     private String model;
     private int year;
-    private Client owner;
+    private int ownerId;
     private String licensePlate;
 
 
 
-    public Car(int id,String brand,String model,int year){
+    public Car(int id,String brand,String model,int year,String licensePlate){
         setId(id);
         setBrand(brand);
         setModel(model);
         setYear(year);
+        setLicensePlate(licensePlate);
     }
 
 
-    public Car(int id,String brand,String model,int year,Client owner){
-        this(id,brand,model,year);
-        setOwner(owner);
+    public Car(int id,String brand,String model,int year,String licensePlate,int ownerId){
+        this(id,brand,model,year,licensePlate);
+        setOwner(ownerId);
     }
 
 
-
+    public String getLicensePlate(){return licensePlate;}
     public int getId(){return id;}
     public String getBrand(){return brand;}
     public String getModel(){return model;}
     public int getYear(){return year;}
-    public Client getOwner(){return owner;}
+    public int getOwnerId(){return ownerId;}
 
 
+    public void setLicensePlate(String licensePlate){
+        if(licensePlate==null || licensePlate.length()>20 || licensePlate.isBlank()) throw new ValidationException("Введен неправильный ID(должен быть больше нуля)");
+        this.licensePlate = licensePlate;
+    }
     public void setId(int id){
         if(id<0) throw new ValidationException("Введен неправильный ID(должен быть больше нуля)");
         this.id = id;
@@ -46,7 +51,7 @@ public class Car implements Displayable {
     }
 
     public void setModel(String model) {
-        if(model.isEmpty()) throw new ValidationException("Введена пустая модель!");
+        if(model.isBlank()) throw new ValidationException("Введена пустая модель!");
         this.model = model;
     }
     public void setYear(int year){
@@ -55,15 +60,11 @@ public class Car implements Displayable {
     }
 
 
-    public void setOwner(Client owner){
-        if(owner==null){throw new ValidationException("Введено для создания авто значение null вместо владельца!");}
-        this.owner= owner;}
+    public void setOwner(int ownerId){
+        if(ownerId<0){throw new ValidationException("Введено неверное ID владельца для авто");}
+        this.ownerId= ownerId;}
 
-    @Override
-    public void showInfo(){
-        System.out.printf("Машина с id:%d\nБренд: %s\nМодель: %s\nГод выпуска: %d\n\n",
-                id, brand, model, year);
-    }
+
 
 
 

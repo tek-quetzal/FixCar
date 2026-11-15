@@ -4,7 +4,7 @@ import by.fixcar.exceptions.ValidationException;
 
 import java.math.BigDecimal;
 
-public class Order implements Displayable {
+public class Order {
     private int id;
     private String description;
     private BigDecimal cost;
@@ -53,7 +53,7 @@ public class Order implements Displayable {
         this.cost = cost;
     }
 
-    public void setStatus(Status status) {
+    private void setStatus(Status status) {
         this.status = status;
     }
 
@@ -89,16 +89,14 @@ public class Order implements Displayable {
 
 
 
-    public void changeStatus(Status newStatus){
+    public void changeStatus(Status newStatus) {
+        if (newStatus == null) throw new ValidationException("Статус не может быть null");
+        if (status != Status.IN_PROGRESS || newStatus == Status.IN_PROGRESS)
+            throw new ValidationException("Нельзя сменить статус " + status.getRuStatus() + " на " + newStatus.getRuStatus() + "\"");
         this.status = newStatus;
     }
 
 
-    @Override
-    public void showInfo(){
-        System.out.printf("Номер заказа: %d\nОписание: %s\nЦена: %.2f\nСтатус заказа: %s\nНомер машины: %d\nИмя механика: %s\n\n",
-                id,description,cost,status.getRusStatus(),car.getId(),mechanic.getName());
-    }
 
 
 }

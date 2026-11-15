@@ -1,8 +1,6 @@
 package by.fixcar.db;
 
 import by.fixcar.model.Client;
-import by.fixcar.db.ConnectionManager;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,6 +8,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import by.fixcar.exceptions.DataAccessException;
+
 
 public class ClientDAO implements DAO<Client>{
 
@@ -74,7 +75,7 @@ public class ClientDAO implements DAO<Client>{
             return preparedStatement.executeUpdate()>0;
         }
         catch(SQLException e){
-            throw new RuntimeException(e);
+            throw new DataAccessException("Ошибка при удалении данных в ClientDAO",e);
         }
 
     }
@@ -91,7 +92,7 @@ public class ClientDAO implements DAO<Client>{
         }
 
         catch(SQLException e){
-            throw new RuntimeException(e);
+            throw new DataAccessException("Ошибка при обновлении данных в ClientDAO",e);
         }
     }
 
@@ -110,7 +111,7 @@ public class ClientDAO implements DAO<Client>{
 
         }
         catch(SQLException e){
-            throw new RuntimeException(e);
+            throw new DataAccessException("Ошибка в методе поиска по ID в ClientDAO",e);
         }
     }
 
@@ -128,7 +129,7 @@ public class ClientDAO implements DAO<Client>{
             return clients;
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException("Ошибка при поиске всех значений в ClientDAO",e);
         }
 
 
@@ -138,7 +139,7 @@ public class ClientDAO implements DAO<Client>{
 
 
 
-    private  Client buildClient(ResultSet resultSet) throws SQLException {
+    protected static Client buildClient(ResultSet resultSet) throws SQLException {
         return  new Client (resultSet.getInt("id"),
                 resultSet.getString("name"),
                 resultSet.getString("phone"));
