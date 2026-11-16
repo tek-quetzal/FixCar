@@ -58,7 +58,7 @@ public class ClientDAO implements DAO<Client>{
             }
         }
         catch(SQLException e){
-            throw new RuntimeException(e);
+            throw new DataAccessException("Ошибка при сохранении данных в ClientDAO",e);
         }
 
         return client;
@@ -67,7 +67,7 @@ public class ClientDAO implements DAO<Client>{
 
 
     @Override
-    public  boolean delete(Integer id){
+    public  boolean delete(int id){
         try(Connection connection = ConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL))
         {
@@ -99,7 +99,7 @@ public class ClientDAO implements DAO<Client>{
 
 
     @Override
-    public Optional<Client> findById(Integer id) {
+    public Optional<Client> findById(int id) {
         try(Connection connection = ConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID_SQL))
         {
@@ -111,7 +111,7 @@ public class ClientDAO implements DAO<Client>{
 
         }
         catch(SQLException e){
-            throw new DataAccessException("Ошибка в методе поиска по ID в ClientDAO",e);
+            throw new DataAccessException("Ошибка при поиске по ID в ClientDAO",e);
         }
     }
 

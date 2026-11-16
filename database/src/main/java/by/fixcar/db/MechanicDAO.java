@@ -1,5 +1,6 @@
 package by.fixcar.db;
 
+import by.fixcar.exceptions.DataAccessException;
 import by.fixcar.model.Mechanic;
 
 import java.sql.Connection;
@@ -11,8 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class MechanicDAO implements DAO<Mechanic>{
-
-    private final static MechanicDAO INSTANCE = new MechanicDAO();
 
     private final static String SAVE_SQL =  """
             INSERT INTO mechanics(name,specialization)
@@ -40,12 +39,12 @@ public class MechanicDAO implements DAO<Mechanic>{
             """;
 
 
-
     private MechanicDAO(){}
-
+    private final static MechanicDAO INSTANCE = new MechanicDAO();
     public static  MechanicDAO getInstance(){
         return INSTANCE;
     }
+
 
     private Mechanic buildMechanic(ResultSet resultSet) throws SQLException{
         return new Mechanic(resultSet.getInt("id"),
@@ -69,12 +68,12 @@ public class MechanicDAO implements DAO<Mechanic>{
             return mechanic;
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException("Ошибка при сохранении данных в MechanicDAO",e);
         }
     }
 
     @Override
-    public boolean delete(Integer id) {
+    public boolean delete(int id) {
         try(Connection connection = ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL))
         {
@@ -82,7 +81,7 @@ public class MechanicDAO implements DAO<Mechanic>{
             return preparedStatement.executeUpdate()>0;
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException("Ошибка при удалении данных в MechanicDAO",e);
         }
 
 
@@ -99,12 +98,12 @@ public class MechanicDAO implements DAO<Mechanic>{
             return preparedStatement.executeUpdate()>0;
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException("Ошибка при обновлении данных в MechanicDAO",e);
         }
     }
 
     @Override
-    public Optional<Mechanic> findById(Integer id) {
+    public Optional<Mechanic> findById(int id) {
         try(Connection connection = ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID_SQL))
         {
@@ -116,7 +115,7 @@ public class MechanicDAO implements DAO<Mechanic>{
         }
 
         catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException("Ошибка при поиске по ID в MechanicDAO",e);
         }
     }
 
@@ -134,7 +133,7 @@ public class MechanicDAO implements DAO<Mechanic>{
         }
 
         catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException("Ошибка при поиске всех значений в MechanicDAO",e);
         }
     }
 

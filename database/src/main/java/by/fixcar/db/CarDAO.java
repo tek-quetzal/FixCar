@@ -1,7 +1,7 @@
 package by.fixcar.db;
 
+import by.fixcar.exceptions.DataAccessException;
 import by.fixcar.model.Car;
-import by.fixcar.model.Client;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -33,7 +33,10 @@ public class CarDAO implements DAO<Car> {
             FIND_ALL_SQL + " WHERE id=?";
 
 
+    private CarDAO(){}
     public static final CarDAO INSTANCE = new CarDAO();
+    public static CarDAO getInstance(){return INSTANCE;}
+
 
 
     @Override
@@ -54,21 +57,21 @@ public class CarDAO implements DAO<Car> {
         }
 
          catch (SQLException e) {
-            throw new RuntimeException(e);
+             throw new DataAccessException("Ошибка при сохранении данных в CarDAO",e);
         }
 
         return car;
     }
 
     @Override
-    public boolean delete(Integer id) {
+    public boolean delete(int id) {
         try(Connection connection = ConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL))
         {
             preparedStatement.setInt(1,id);
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException("Ошибка при удалении данных в CarDAO",e);
         }
 
     }
@@ -90,13 +93,13 @@ public class CarDAO implements DAO<Car> {
 
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException("Ошибка при обновлении данных в CarDAO",e);
         }
     }
 
 
     @Override
-    public Optional<Car> findById(Integer id) {
+    public Optional<Car> findById(int id) {
         try(Connection connection=ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID_SQL))
         {
@@ -109,25 +112,25 @@ public class CarDAO implements DAO<Car> {
             return Optional.ofNullable(car);
         }
         catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException("Ошибка при поиске по ID в CarDAO",e);
         }
     }
 
 
-    public Optional<Car> findByOrderId(Integer ownerId) {
+    public List<Car> findByOrderId(Integer ownerId) {
         try(Connection connection=ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL + "WHERE owner_id=?"))
         {
             preparedStatement.setInt(1,ownerId);
             ResultSet resultSet = preparedStatement.executeQuery();
-            Car car = null;
+            List<Car> cars = new ArrayList<>();
             if(resultSet.next()){
-                car = buildCar(resultSet);
+                cars.add(buildCar(resultSet));
             }
-            return Optional.ofNullable(car);
+            return cars;
         }
         catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException("Ошибка при поиске всех автомобилей по ownerID в CarDAO",e);
         }
     }
 
@@ -147,7 +150,7 @@ public class CarDAO implements DAO<Car> {
             return cars;
         }
         catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException("Ошибка при поиске всех значений в CarDAO",e);
         }
     }
 
@@ -163,11 +166,6 @@ public class CarDAO implements DAO<Car> {
 
     }
 
-
-    public static CarDAO getInstance(){
-        return INSTANCE;
-    }
-    private CarDAO(){}
 
 
 }

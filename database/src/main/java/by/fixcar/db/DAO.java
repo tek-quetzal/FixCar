@@ -5,9 +5,9 @@ import java.util.Optional;
 
 public interface DAO <E>{
     E save(E obj);
-    boolean delete(Integer id);
+    boolean delete(int id);
     boolean update(E obj);
-    Optional<E> findById(Integer id);
+    Optional<E> findById(int id);
     List<E> findAll();
 
 }
