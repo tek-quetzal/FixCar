@@ -1,7 +1,6 @@
 package by.fixcar.model;
 
 import by.fixcar.exceptions.ValidationException;
-
 import java.time.Year;
 
 public class Car {
@@ -38,7 +37,7 @@ public class Car {
 
 
     public void setLicensePlate(String licensePlate){
-        if(licensePlate==null || licensePlate.length()>20 || licensePlate.isBlank()) throw new ValidationException("Введен неправильный ID(должен быть больше нуля)");
+        if(licensePlate==null || licensePlate.length()>20 || licensePlate.isBlank()) throw new ValidationException("Госномер не должен быть пустым и длиннее 20 символов");
         this.licensePlate = licensePlate;
     }
     public void setId(int id){
@@ -46,12 +45,12 @@ public class Car {
         this.id = id;
     }
     public void setBrand(String brand) {
-        if(brand.isEmpty()) throw new ValidationException("Введён пустой бренд!");
+        if(brand==null || brand.isBlank() || brand.length()>50) throw new ValidationException("Бренд не должен быть пустым и длиннее 50 символов");
         this.brand = brand;
     }
 
     public void setModel(String model) {
-        if(model.isBlank()) throw new ValidationException("Введена пустая модель!");
+        if(model==null || model.isBlank() || model.length()>50) throw new ValidationException("Модель не должна быть пустой и длиннее 50 символов");
         this.model = model;
     }
     public void setYear(int year){
@@ -61,7 +60,7 @@ public class Car {
 
 
     public void setOwner(int ownerId){
-        if(ownerId<0){throw new ValidationException("Введено неверное ID владельца для авто");}
+        if(ownerId<=0){throw new ValidationException("Введено неверное ID владельца для авто");}
         this.ownerId= ownerId;}
 
 

@@ -29,8 +29,8 @@ CREATE TABLE cars(
 
 CREATE TABLE orders (
     id    SERIAL      PRIMARY KEY,
-    description   TEXT NOT NULL,
-    cost          NUMERIC(10,2) NOT NULL,
+    description   VARCHAR(500) NOT NULL,
+    cost          NUMERIC(10,2) NOT NULL CHECK (cost>=0),
     status VARCHAR(30) NOT NULL DEFAULT 'IN_PROGRESS' CHECK
         (status IN ('IN_PROGRESS','COMPLETED','CANCELLED')),
     car_id        INTEGER  NOT NULL REFERENCES cars(id),
