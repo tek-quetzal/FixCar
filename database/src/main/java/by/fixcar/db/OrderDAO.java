@@ -33,7 +33,8 @@ public class OrderDAO implements DAO<Order>{
             cars c ON o.car_id = c.id JOIN mechanics m ON o.mechanic_id = m.id
             """;
 
-    private static final String FIND_BY_ID_SQL = FIND_ALL_SQL + " WHERE o.id=? ORDER BY o.id";
+    private static final String FIND_BY_ID_SQL = FIND_ALL_SQL + " WHERE o.id=?";
+
 
 
     private OrderDAO(){}
@@ -64,7 +65,7 @@ public class OrderDAO implements DAO<Order>{
             }
 
         } catch (SQLException e) {
-            throw new DataAccessException("Ошибка при сохранении данных в OrderDAO",e);
+            throw new DataAccessException("Ошибка при сохранении заказов в OrderDAO",e);
         }
         return order;
     }
@@ -79,7 +80,7 @@ public class OrderDAO implements DAO<Order>{
             return preparedStatement.executeUpdate()>0;
 
         } catch (SQLException e) {
-            throw new DataAccessException("Ошибка при удалении данных в OrderDAO",e);
+            throw new DataAccessException("Ошибка при удалении заказов в OrderDAO",e);
         }
     }
 
@@ -99,7 +100,7 @@ public class OrderDAO implements DAO<Order>{
             return preparedStatement.executeUpdate()>0;
 
         } catch (SQLException e) {
-            throw new DataAccessException("Ошибка при обновлении данных в OrderDAO",e);
+            throw new DataAccessException("Ошибка при обновлении заказов в OrderDAO",e);
         }
     }
 
@@ -118,7 +119,7 @@ public class OrderDAO implements DAO<Order>{
             return Optional.ofNullable(order);
 
         } catch (SQLException e) {
-            throw new DataAccessException("Ошибка при поиске данных по ID в OrderDAO",e);
+            throw new DataAccessException("Ошибка при поиске заказов по ID в OrderDAO",e);
         }
     }
 
@@ -138,9 +139,87 @@ public class OrderDAO implements DAO<Order>{
             return orders;
 
         } catch (SQLException e) {
-            throw new DataAccessException("Ошибка при поиске всех данных в OrderDAO",e);
+            throw new DataAccessException("Ошибка при поиске всех заказов в OrderDAO",e);
         }
     }
+
+
+
+    public List<Order> findByStatus(Status status){
+        try(Connection connection = ConnectionManager.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL + " WHERE o.status = ?")
+        )
+        {
+            preparedStatement.setString(1,status.name());
+            List<Order> orders = new ArrayList<>();
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()){
+                orders.add(buildOrder(resultSet));
+            }
+
+            return orders;
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Ошибка при поиске всех заказов по статусу в OrderDAO",e);
+        }
+    }
+
+
+
+
+    public List<Order> findByCarId(int carId){
+        try(Connection connection = ConnectionManager.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL + " WHERE o.car_id = ?")
+        )
+        {
+            preparedStatement.setInt(1,carId);
+            List<Order> orders = new ArrayList<>();
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()){
+                orders.add(buildOrder(resultSet));
+            }
+
+            return orders;
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Ошибка при поиске всех заказов по ID машины в OrderDAO",e);
+        }
+    }
+
+
+    public List<Order> findByMechanicId(int mechanicId){
+        try(Connection connection = ConnectionManager.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL + " WHERE o.mechanic_id = ?")
+        )
+        {
+            preparedStatement.setInt(1,mechanicId);
+            List<Order> orders = new ArrayList<>();
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()){
+                orders.add(buildOrder(resultSet));
+            }
+
+            return orders;
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Ошибка при поиске всех заказов по механику в OrderDAO",e);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     private Order buildOrder(ResultSet resultSet) throws SQLException{
