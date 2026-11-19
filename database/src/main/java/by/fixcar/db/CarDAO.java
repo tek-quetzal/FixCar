@@ -117,7 +117,7 @@ public class CarDAO implements DAO<Car> {
     }
 
 
-    public List<Car> findByOrderId(Integer ownerId) {
+    public List<Car> findByOwnerId(int ownerId) {
         try(Connection connection=ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL + "WHERE owner_id=?"))
         {
@@ -133,6 +133,27 @@ public class CarDAO implements DAO<Car> {
             throw new DataAccessException("Ошибка при поиске всех автомобилей по ownerID в CarDAO",e);
         }
     }
+
+
+
+    public Optional<Car> findByLicensePlate(String LicensePlate) {
+        try(Connection connection=ConnectionManager.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL + "WHERE license_plate=?"))
+        {
+            preparedStatement.setString(1,LicensePlate);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            Car car = null;
+            if(resultSet.next()){
+                car = buildCar(resultSet);
+            }
+            return Optional.ofNullable(car);
+        }
+        catch (SQLException e) {
+            throw new DataAccessException("Ошибка при поиске автомобиля по номерному знаку в CarDAO",e);
+        }
+    }
+
+
 
 
 
