@@ -10,8 +10,8 @@ import java.util.List;
 
 
 public class ClientService {
-    public final ClientDAO clientDAO = ClientDAO.getInstance();
-    public final CarDAO carDAO = CarDAO.getInstance();
+    private final ClientDAO clientDAO = ClientDAO.getInstance();
+    private final CarDAO carDAO = CarDAO.getInstance();
 
 
     public Client create(String name, String phone){
@@ -26,7 +26,7 @@ public class ClientService {
 
 
     public Client getById(int id){
-        return clientDAO.findById(id).orElseThrow(()->new NotFoundException("Client", id));
+        return clientDAO.findById(id).orElseThrow(()->new NotFoundException("Клиент", id));
     }
 
 
@@ -42,8 +42,8 @@ public class ClientService {
 
     public void delete(int id){
         getById(id);
-        if (carDAO.findByOwnerId(id).isEmpty()) carDAO.delete(id);
-        throw new ValidationException("Нельзя удалить клиента,пока у него есть машины");
+        if (!carDAO.findByOwnerId(id).isEmpty()) throw new ValidationException("Нельзя удалить клиента,пока у него есть машины");
+        clientDAO.delete(id);
     }
 
 
