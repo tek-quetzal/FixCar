@@ -24,7 +24,7 @@ public class Car {
 
     public Car(int id,String brand,String model,int year,String licensePlate,int ownerId){
         this(id,brand,model,year,licensePlate);
-        setOwner(ownerId);
+        setOwnerId(ownerId);
     }
 
 
@@ -59,7 +59,7 @@ public class Car {
     }
 
 
-    public void setOwner(int ownerId){
+    public void setOwnerId(int ownerId){
         if(ownerId<=0){throw new ValidationException("Введено неверное ID владельца для авто");}
         this.ownerId= ownerId;}
 
