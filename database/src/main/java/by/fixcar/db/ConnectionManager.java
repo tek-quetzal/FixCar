@@ -17,9 +17,10 @@ public class ConnectionManager {
     static {
         try(InputStream inputStream = ConnectionManager.class.getClassLoader().getResourceAsStream(configFile)){
             properties.load(inputStream);
+            Class.forName("org.postgresql.Driver");
         }
-        catch (IOException e){
-            throw new RuntimeException("Ошибка получения доступа к файлу " + configFile, e);
+        catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException("Ошибка инициализации драйвера или файла " + configFile, e);
         }
     }
 
