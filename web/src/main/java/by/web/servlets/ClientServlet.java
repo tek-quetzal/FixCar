@@ -1,7 +1,9 @@
 package by.web.servlets;
 
 
+import by.fixcar.exceptions.ValidationException;
 import by.fixcar.model.Client;
+import by.fixcar.service.exceptions.NotFoundException;
 import by.fixcar.service.services.ClientService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -22,7 +24,7 @@ public class ClientServlet extends HttpServlet {
         String id = req.getParameter("id");
         String action = req.getParameter("action");
         if("change".equals(action) && id!=null) {
-            req.setAttribute("user", clientService.getById(Integer.parseInt(id)));
+            req.setAttribute("client", clientService.getById(Integer.parseInt(id)));
             req.getRequestDispatcher("/WEB-INF/jsp/client-form.jsp").forward(req, resp);
         }
         else if("create".equals(action)) {
@@ -41,20 +43,23 @@ public class ClientServlet extends HttpServlet {
         String name = req.getParameter("clientName");
         String phone = req.getParameter("clientPhone");
 
-        if("change".equals(action)){
-            int id = Integer.parseInt(req.getParameter("id"));
-            clientService.update(id,name,phone);
+        try {
+            if ("change".equals(action)) {
+                int id = Integer.parseInt(req.getParameter("id"));
+                clientService.update(id, name, phone);
+            } else if ("create".equals(action)) {
+                clientService.create(name, phone);
+            } else if ("delete".equals(action)) {
+                int id = Integer.parseInt(req.getParameter("id"));
+                clientService.delete(id);
+            }
+            resp.sendRedirect(req.getContextPath() + "/clients");
+        }
+        catch(ValidationException e){
+            req.setAttribute("errorMessage",e.getMessage());
+            req.getRequestDispatcher("/WEB-INF/jsp/client-form.jsp").forward(req,resp);
         }
 
-        else if("create".equals(action)){
-            clientService.create(name,phone);
-        }
-        else if("delete".equals(action)){
-            int id = Integer.parseInt(req.getParameter("id"));
-            clientService.delete(id);
-        }
-
-        resp.sendRedirect(req.getContextPath() + "/clients");
     }
 
 
