@@ -17,7 +17,7 @@
 
 <c:choose>
     <c:when test="${not empty currentId}">
-        <c:set var="pageTitle" value="Изменение механика с именем ${mechanic.name}" />
+        <c:set var="pageTitle" value="Изменение механика с именем ${not empty mechanic.name ? mechanic.name : param.mechanicName}" />
         <c:set var="formAction" value="change"/>
         <c:set var="buttonText" value="Изменить"/>
     </c:when>
@@ -46,7 +46,7 @@
     <input type="text" id="mechanic-name" name="mechanicName"
            value="<c:out value='${empty mechanic.name ? mechanicName : mechanic.name}'/>">
 
-    <label for="mechanic-specialization">Имя</label>
+    <label for="mechanic-specialization">Специализация</label>
     <input type="text" id="mechanic-specialization" name="mechanicSpecialization"
            value="<c:out value='${empty mechanic.specialization ? mechanicSpecialization : mechanic.specialization}'/>">
 
