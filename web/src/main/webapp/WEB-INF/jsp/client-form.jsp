@@ -27,14 +27,7 @@
 </c:choose>
 
 
-<c:if test="${not empty errorMessage}">
-    <div class="validation-error">
-        <h1 class="validation-error__h1">Ошибка</h1>
-        <p class="validation-error__p">${errorMessage}</p>
-    </div>
-</c:if>
-
-
+<%@ include file="/WEB-INF/jsp/validation-error.jsp"%>
 
 
 <h1>${pageTitle}</h1>

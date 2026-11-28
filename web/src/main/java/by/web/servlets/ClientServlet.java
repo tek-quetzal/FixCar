@@ -31,8 +31,7 @@ public class ClientServlet extends HttpServlet {
             req.getRequestDispatcher("/WEB-INF/jsp/client-form.jsp").forward(req, resp);
         }
         else {
-            List<Client> clients = clientService.getAll();
-            req.setAttribute("clients", clients);
+            req.setAttribute("clients", clientService.getAll());
             req.getRequestDispatcher("/WEB-INF/jsp/clients.jsp").forward(req,resp);
         }
     }
@@ -56,7 +55,12 @@ public class ClientServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/clients");
         }
         catch(ValidationException e){
-            req.setAttribute("errorMessage",e.getMessage());
+            if("delete".equals(action)){
+                req.setAttribute("error",e.getMessage());
+                req.setAttribute("clients", clientService.getAll());
+                req.getRequestDispatcher("/WEB-INF/jsp/clients.jsp").forward(req,resp);
+            }
+            req.setAttribute("error",e.getMessage());
             req.getRequestDispatcher("/WEB-INF/jsp/client-form.jsp").forward(req,resp);
         }
 
