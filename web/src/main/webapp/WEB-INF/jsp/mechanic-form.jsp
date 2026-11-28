@@ -29,7 +29,7 @@
 </c:choose>
 
 
-<%@ include file="/WEB-INF/jsp/validationError.jsp" %>
+<%@ include file="/WEB-INF/jsp/validation-error.jsp" %>
 
 <h1><c:out value="${pageTitle}"/></h1>
 <form action="${contextPath}/mechanics" method="post">
